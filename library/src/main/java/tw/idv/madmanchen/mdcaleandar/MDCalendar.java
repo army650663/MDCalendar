@@ -2,8 +2,8 @@ package tw.idv.madmanchen.mdcaleandar;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -13,15 +13,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
-
-import tw.idv.madmanchen.mdcaleandar.databinding.ViewMdcalendarBinding;
-import tw.idv.madmanchen.mdcaleandar.databinding.ViewMdcalendarCellBinding;
 
 /**
  * Author:      chenshaowei
@@ -36,7 +35,12 @@ import tw.idv.madmanchen.mdcaleandar.databinding.ViewMdcalendarCellBinding;
 
 public class MDCalendar extends LinearLayout {
     private Context mContext;
-    private ViewMdcalendarBinding mBinding;
+    private LinearLayout calendar_ll;
+    private LinearLayout titleBar_ll;
+    private TextView dateTitle_tv;
+    private ViewPager date_vp;
+    private ImageView today_iv;
+
     // Attr
     private int todayResId;
     private int selectedResId;
@@ -68,11 +72,11 @@ public class MDCalendar extends LinearLayout {
         initView(context);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MDCalendar);
         try {
-            int titleBarColor = typedArray.getColor(R.styleable.MDCalendar_titleBarColor, Color.BLACK);
-            mBinding.titleBarLl.setBackgroundColor(titleBarColor);
+            int titleBarColor = typedArray.getColor(R.styleable.MDCalendar_titleBarColor, ContextCompat.getColor(context, R.color.darkBlue));
+            titleBar_ll.setBackgroundColor(titleBarColor);
 
             int calendarBg = typedArray.getResourceId(R.styleable.MDCalendar_calendarBg, R.color.white);
-            mBinding.calendarLl.setBackgroundResource(calendarBg);
+            calendar_ll.setBackgroundResource(calendarBg);
 
             todayResId = typedArray.getResourceId(R.styleable.MDCalendar_todayCellBg, R.drawable.sty_today);
             selectedResId = typedArray.getResourceId(R.styleable.MDCalendar_selectedDateBg, R.drawable.sty_date_selected);
@@ -89,15 +93,20 @@ public class MDCalendar extends LinearLayout {
         mCalendarPagerAdapter = new CalendarPagerAdapter();
         View view = inflate(context, R.layout.view_mdcalendar, null);
         addView(view);
-        mBinding = DataBindingUtil.bind(view);
-        mBinding.dateTitleTv.setText(mCalendarTitleFormat.format(mNowCalendar.getTime()));
-        mBinding.dateVp.setAdapter(mCalendarPagerAdapter);
-        mBinding.dateVp.addOnPageChangeListener(mPageChangeListener);
-        mBinding.dateVp.setCurrentItem(mPageLimit / 2);
-        mBinding.todayIv.setOnClickListener(new OnClickListener() {
+        calendar_ll = (LinearLayout) view.findViewById(R.id.calendar_ll);
+        titleBar_ll = (LinearLayout) view.findViewById(R.id.titleBar_ll);
+        dateTitle_tv = (TextView) view.findViewById(R.id.dateTitle_tv);
+        date_vp = (ViewPager) view.findViewById(R.id.date_vp);
+        today_iv = (ImageView) view.findViewById(R.id.today_iv);
+
+        dateTitle_tv.setText(mCalendarTitleFormat.format(mNowCalendar.getTime()));
+        date_vp.setAdapter(mCalendarPagerAdapter);
+        date_vp.addOnPageChangeListener(mPageChangeListener);
+        date_vp.setCurrentItem(mPageLimit / 2);
+        today_iv.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mBinding.dateVp.setCurrentItem(mPageLimit / 2, true);
+                date_vp.setCurrentItem(mPageLimit / 2, true);
             }
         });
     }
@@ -115,7 +124,7 @@ public class MDCalendar extends LinearLayout {
         @Override
         public void onPageSelected(int position) {
             Calendar calendar = getCalendarFromPosition(position);
-            mBinding.dateTitleTv.setText(mCalendarTitleFormat.format(calendar.getTime()));
+            dateTitle_tv.setText(mCalendarTitleFormat.format(calendar.getTime()));
             System.gc();
         }
 
@@ -165,9 +174,9 @@ public class MDCalendar extends LinearLayout {
             calendar_gv.post(new Runnable() {
                 @Override
                 public void run() {
-                    ViewGroup.LayoutParams params = mBinding.dateVp.getLayoutParams();
+                    ViewGroup.LayoutParams params = date_vp.getLayoutParams();
                     params.height = calendar_gv.getMeasuredHeight();
-                    mBinding.dateVp.setLayoutParams(params);
+                    date_vp.setLayoutParams(params);
                 }
             });
 
@@ -217,16 +226,17 @@ public class MDCalendar extends LinearLayout {
             if (convertView == null) {
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.view_mdcalendar_cell, null, false);
             }
-            ViewMdcalendarCellBinding binding = DataBindingUtil.bind(convertView);
+            TextView day_tv = (TextView) convertView.findViewById(R.id.day_tv);
+
             final Calendar fCalendar = Calendar.getInstance();
             fCalendar.set(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), 1);
             fCalendar.add(Calendar.DATE, position - mDayOfWeek + 1);
 
             if (mCalendar.get(Calendar.MONTH) == fCalendar.get(Calendar.MONTH)) {
-                binding.dayTv.setTextColor(Color.BLACK);
+                day_tv.setTextColor(Color.BLACK);
                 convertView.setBackgroundResource(inMonthDateResId);
             } else {
-                binding.dayTv.setTextColor(Color.GRAY);
+                day_tv.setTextColor(Color.GRAY);
                 convertView.setBackgroundResource(outMonthDateResId);
             }
 
@@ -236,7 +246,7 @@ public class MDCalendar extends LinearLayout {
                 convertView.setBackgroundResource(todayResId);
             }
 
-            binding.dayTv.setText(String.valueOf(fCalendar.get(Calendar.DATE)));
+            day_tv.setText(String.valueOf(fCalendar.get(Calendar.DATE)));
             convertView.setTag(fCalendar);
             return convertView;
         }
