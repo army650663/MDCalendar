@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MDCalendar">
+        <attr name="titleBarColor" format="color"/>
+        <attr name="todayCellBg" format="integer"/>
+        <attr name="calendarBg" format="integer"/>
+        <attr name="selectedDateBg" format="integer"/>
+        <attr name="inMonthDateBg" format="integer"/>
+        <attr name="outMonthDateBg" format="integer"/>
+    </declare-styleable>
+</resources>

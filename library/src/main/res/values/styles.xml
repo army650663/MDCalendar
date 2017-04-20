@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="StyleToday">
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:background">@drawable/sty_circle_btn0</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:src">@drawable/vector_today</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="StyleMonthTitle">
+        <item name="android:textColor">#fff</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:shadowColor">#3b3b3b</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
+    <style name="StyleWeekTitle">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:shadowColor">#3b3b3b</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+</resources>
