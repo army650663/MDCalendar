@@ -125,7 +125,6 @@ public class MDCalendar extends LinearLayout {
         public void onPageSelected(int position) {
             Calendar calendar = getCalendarFromPosition(position);
             dateTitle_tv.setText(mCalendarTitleFormat.format(calendar.getTime()));
-            System.gc();
         }
 
         @Override
@@ -151,7 +150,7 @@ public class MDCalendar extends LinearLayout {
             final WCHGridView calendar_gv = new WCHGridView(mContext);
             calendar_gv.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             calendar_gv.setNumColumns(7);
-            calendar_gv.setAdapter(new CalendarAdapter(container, position));
+            calendar_gv.setAdapter(new CalendarAdapter(position));
             calendar_gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
@@ -163,7 +162,6 @@ public class MDCalendar extends LinearLayout {
                             CalendarAdapter adapter = (CalendarAdapter) gv.getAdapter();
                             adapter.notifyDataSetChanged();
                         }
-                        System.gc();
                     }
                     if (mOnDateClickListener != null) {
                         mOnDateClickListener.onDateClick(view, calendar);
@@ -196,12 +194,10 @@ public class MDCalendar extends LinearLayout {
     }
 
     private class CalendarAdapter extends BaseAdapter {
-        ViewGroup mContainer;
         Calendar mCalendar;
         int mDayOfWeek;
 
-        CalendarAdapter(ViewGroup container, int position) {
-            mContainer = container;
+        CalendarAdapter(int position) {
             mCalendar = getCalendarFromPosition(position);
             mDayOfWeek = mCalendar.get(Calendar.DAY_OF_WEEK);
         }
