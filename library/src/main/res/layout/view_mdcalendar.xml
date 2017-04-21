@@ -37,7 +37,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/today_iv"
+                    android:id="@+id/goToday_iv"
                     style="@style/StyleToday"
                     tools:ignore="ContentDescription"
                     android:layout_width="40dp"
@@ -113,7 +113,7 @@
     </LinearLayout>
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/date_vp"
+        android:id="@+id/month_vp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </android.support.v4.view.ViewPager>

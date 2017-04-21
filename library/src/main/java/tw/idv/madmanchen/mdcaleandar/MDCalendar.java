@@ -35,11 +35,11 @@ import java.util.Locale;
 
 public class MDCalendar extends LinearLayout {
     private Context mContext;
-    private LinearLayout calendar_ll;
-    private LinearLayout titleBar_ll;
-    private TextView dateTitle_tv;
-    private ViewPager date_vp;
-    private ImageView today_iv;
+    private LinearLayout mCalendar_ll;
+    private LinearLayout mTitleBar_ll;
+    private TextView mDateTitle_tv;
+    private ViewPager mMonth_vp;
+    private ImageView mGoToday_iv;
 
     // Attr
     private int todayResId;
@@ -73,10 +73,10 @@ public class MDCalendar extends LinearLayout {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MDCalendar);
         try {
             int titleBarColor = typedArray.getColor(R.styleable.MDCalendar_titleBarColor, ContextCompat.getColor(context, R.color.darkBlue));
-            titleBar_ll.setBackgroundColor(titleBarColor);
+            mTitleBar_ll.setBackgroundColor(titleBarColor);
 
             int calendarBg = typedArray.getResourceId(R.styleable.MDCalendar_calendarBg, R.color.white);
-            calendar_ll.setBackgroundResource(calendarBg);
+            mCalendar_ll.setBackgroundResource(calendarBg);
 
             todayResId = typedArray.getResourceId(R.styleable.MDCalendar_todayCellBg, R.drawable.sty_today);
             selectedResId = typedArray.getResourceId(R.styleable.MDCalendar_selectedDateBg, R.drawable.sty_date_selected);
@@ -93,20 +93,20 @@ public class MDCalendar extends LinearLayout {
         mCalendarPagerAdapter = new CalendarPagerAdapter();
         View view = inflate(context, R.layout.view_mdcalendar, null);
         addView(view);
-        calendar_ll = (LinearLayout) view.findViewById(R.id.calendar_ll);
-        titleBar_ll = (LinearLayout) view.findViewById(R.id.titleBar_ll);
-        dateTitle_tv = (TextView) view.findViewById(R.id.dateTitle_tv);
-        date_vp = (ViewPager) view.findViewById(R.id.date_vp);
-        today_iv = (ImageView) view.findViewById(R.id.today_iv);
+        mCalendar_ll = (LinearLayout) view.findViewById(R.id.calendar_ll);
+        mTitleBar_ll = (LinearLayout) view.findViewById(R.id.titleBar_ll);
+        mDateTitle_tv = (TextView) view.findViewById(R.id.dateTitle_tv);
+        mMonth_vp = (ViewPager) view.findViewById(R.id.month_vp);
+        mGoToday_iv = (ImageView) view.findViewById(R.id.goToday_iv);
 
-        dateTitle_tv.setText(mCalendarTitleFormat.format(mNowCalendar.getTime()));
-        date_vp.setAdapter(mCalendarPagerAdapter);
-        date_vp.addOnPageChangeListener(mPageChangeListener);
-        date_vp.setCurrentItem(mPageLimit / 2);
-        today_iv.setOnClickListener(new OnClickListener() {
+        mDateTitle_tv.setText(mCalendarTitleFormat.format(mNowCalendar.getTime()));
+        mMonth_vp.setAdapter(mCalendarPagerAdapter);
+        mMonth_vp.addOnPageChangeListener(mPageChangeListener);
+        mMonth_vp.setCurrentItem(mPageLimit / 2);
+        mGoToday_iv.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                date_vp.setCurrentItem(mPageLimit / 2, true);
+                mMonth_vp.setCurrentItem(mPageLimit / 2, true);
             }
         });
     }
@@ -114,7 +114,7 @@ public class MDCalendar extends LinearLayout {
     public void setOnDateClickListener(OnDateClickListener onDateClickListener) {
         mOnDateClickListener = onDateClickListener;
     }
-    
+
     private ViewPager.OnPageChangeListener mPageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -124,8 +124,7 @@ public class MDCalendar extends LinearLayout {
         @Override
         public void onPageSelected(int position) {
             Calendar calendar = getCalendarFromPosition(position);
-            dateTitle_tv.setText(mCalendarTitleFormat.format(calendar.getTime()));
-            System.gc();
+            mDateTitle_tv.setText(mCalendarTitleFormat.format(calendar.getTime()));
         }
 
         @Override
@@ -151,7 +150,7 @@ public class MDCalendar extends LinearLayout {
             final WCHGridView calendar_gv = new WCHGridView(mContext);
             calendar_gv.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             calendar_gv.setNumColumns(7);
-            calendar_gv.setAdapter(new CalendarAdapter(container, position));
+            calendar_gv.setAdapter(new CalendarAdapter(position));
             calendar_gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
@@ -163,7 +162,6 @@ public class MDCalendar extends LinearLayout {
                             CalendarAdapter adapter = (CalendarAdapter) gv.getAdapter();
                             adapter.notifyDataSetChanged();
                         }
-                        System.gc();
                     }
                     if (mOnDateClickListener != null) {
                         mOnDateClickListener.onDateClick(view, calendar);
@@ -174,9 +172,9 @@ public class MDCalendar extends LinearLayout {
             calendar_gv.post(new Runnable() {
                 @Override
                 public void run() {
-                    ViewGroup.LayoutParams params = date_vp.getLayoutParams();
+                    ViewGroup.LayoutParams params = mMonth_vp.getLayoutParams();
                     params.height = calendar_gv.getMeasuredHeight();
-                    date_vp.setLayoutParams(params);
+                    mMonth_vp.setLayoutParams(params);
                 }
             });
 
@@ -196,12 +194,10 @@ public class MDCalendar extends LinearLayout {
     }
 
     private class CalendarAdapter extends BaseAdapter {
-        ViewGroup mContainer;
         Calendar mCalendar;
         int mDayOfWeek;
 
-        CalendarAdapter(ViewGroup container, int position) {
-            mContainer = container;
+        CalendarAdapter(int position) {
             mCalendar = getCalendarFromPosition(position);
             mDayOfWeek = mCalendar.get(Calendar.DAY_OF_WEEK);
         }
