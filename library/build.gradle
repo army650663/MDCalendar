@@ -1,8 +1,5 @@
 apply plugin: 'com.android.library'
 apply from: 'maven-release-aar.gradle'
-apply plugin: 'com.github.dcendents.android-maven'
-
-group='com.github.army650663'
 
 android {
     compileSdkVersion 25
