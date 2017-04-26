@@ -30,7 +30,7 @@ import java.util.Locale;
  * Date         Author          version         Description
  * ---------------------------------------------------------------------
  * 2017/4/18      chenshaowei         V1.0.0          Create
- * Why & What is modified:
+ * What is modified:
  */
 
 public class MDCalendar extends LinearLayout {
